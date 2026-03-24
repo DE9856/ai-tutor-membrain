@@ -1,12 +1,11 @@
-# In-memory storage (REAL)
-memory_store = []
+from supabase_client import supabase
 
 
 def call_membrain(action: str, content: str):
-    global memory_store
-
     if action == "add":
-        memory_store.append(content)
+        supabase.table("memories").insert({
+            "content": content
+        }).execute()
 
         return {
             "membrain": "add",
@@ -17,10 +16,12 @@ def call_membrain(action: str, content: str):
     if action == "search":
         query = content.lower()
 
-        # simple semantic-like match
+        response = supabase.table("memories").select("*").execute()
+
         results = [
-            item for item in memory_store
-            if query in item.lower()
+            item["content"]
+            for item in response.data
+            if query in item["content"].lower()
         ]
 
         return {
