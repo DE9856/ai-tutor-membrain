@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from models import NoteInput, SearchInput
 from agent import run_agent
-from tool_executor import get_graph, get_recommendations
 
 app = FastAPI()
 
@@ -27,7 +26,6 @@ ONLY call the tool.
 Content:
 {data.text}
 """
-
     return run_agent(prompt)
 
 
@@ -37,24 +35,36 @@ Content:
 @app.post("/search")
 def search(data: SearchInput):
     prompt = f"""
-    You MUST call the tool 'membrain_search'.
+You MUST call the tool 'membrain_search'.
 
-    DO NOT explain anything.
-    ONLY call the tool.
+DO NOT explain anything.
+ONLY call the tool.
 
-    Query:
-    {data.query}
-    """
-
+Query:
+{data.query}
+"""
     return run_agent(prompt)
 
 
+# -------------------------
+# GRAPH (TEMP — based on search)
+# -------------------------
 @app.get("/graph")
 def graph():
-    return get_graph()
+    # simple placeholder (since real graph not exposed via API)
+    return {
+        "message": "Graph will be derived from Membrain in frontend",
+        "status": "using Membrain backend"
+    }
 
+
+# -------------------------
+# RECOMMENDATIONS (TEMP)
+# -------------------------
 @app.get("/recommendations")
 def recommendations():
-    return get_recommendations()
-
-
+    return {
+        "weak_concepts": [],
+        "next_to_learn": ["Try searching your stored concepts"],
+        "revise": []
+    }
