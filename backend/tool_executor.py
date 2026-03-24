@@ -30,19 +30,28 @@ def execute_tool(tool_call):
             }
 
         # -------------------------
+        # COMMON PARAMS
+        # -------------------------
+        user_id = args.get("user_id", "default_user")  # 🔥 IMPORTANT
+
+        # -------------------------
         # TOOL HANDLING
         # -------------------------
         if name == "membrain_add":
             content = args.get("content")
+
             if not content:
                 return {"error": "Missing 'content'"}
-            return call_membrain("add", content)
+
+            return call_membrain("add", content, user_id)  # 🔥 FIXED
 
         if name == "membrain_search":
             query = args.get("query")
+
             if not query:
                 return {"error": "Missing 'query'"}
-            return call_membrain("search", query)
+
+            return call_membrain("search", query, user_id)  # 🔥 FIXED
 
         return {"error": f"Unknown tool: {name}"}
 

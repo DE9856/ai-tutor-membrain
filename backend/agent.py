@@ -24,9 +24,10 @@ tools = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "content": {"type": "string"}
+                    "content": {"type": "string"},
+                    "user_id": {"type": "string"}
                 },
-                "required": ["content"]
+                "required": ["content", "user_id"]
             }
         }
     },
@@ -38,9 +39,10 @@ tools = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "query": {"type": "string"}
+                    "query": {"type": "string"},
+                    "user_id": {"type": "string"}
                 },
-                "required": ["query"]
+                "required": ["query", "user_id"]
             }
         }
     }

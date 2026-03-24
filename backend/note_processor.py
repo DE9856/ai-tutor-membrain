@@ -1,4 +1,7 @@
 from agent import run_agent
+from logic import update_score
+import json
+from tool_executor import execute_tool
 
 
 # -------------------------
@@ -30,10 +33,13 @@ Extract ONLY core learning concepts from the text.
 
 STRICT RULES:
 - MAX 3 concepts ONLY
-- Each concept MUST be 1-3 words
-- NO sentences
+- Each concept MUST be 1-2 words
+- Use STANDARD terms (e.g., "Machine Learning", not "AI Subset")
+- NO synonyms or variations
+- NO phrases like "subset", "type of", "part of"
 - NO explanations
-- NO prefixes like "Here are..."
+- NO sentences
+- NO headings
 - NO numbering
 
 Return ONLY bullet points.
@@ -78,13 +84,14 @@ def clean_concepts(text):
 
         # ❌ remove junk patterns
         if (
-            not line
-            or "here are" in line.lower()
-            or "concept" in line.lower()
-            or "function_call" in line.lower()
-            or "membrain" in line.lower()
-            or len(line) > 30
-            or len(line.split()) > 4
+        not line
+        or "subset" in line.lower()
+        or "part" in line.lower()
+        or "type" in line.lower()
+        or "concept" in line.lower()
+        or "here are" in line.lower()
+        or len(line) > 30
+        or len(line.split()) > 3
         ):
             continue
 
@@ -95,7 +102,7 @@ def clean_concepts(text):
 # -------------------------
 # MAIN PIPELINE
 # -------------------------
-def store_note_in_membrain(note_text):
+def store_note_in_membrain(note_text, user_id):
     chunks = split_into_chunks(note_text)
 
     all_concepts = []
@@ -103,18 +110,24 @@ def store_note_in_membrain(note_text):
 
     for chunk in chunks:
         raw = extract_concepts(chunk)
-        concepts = clean_concepts(raw)[:3]  # limit to top 3 concepts per chunk
+        concepts = clean_concepts(raw)[:3]  # limit to top 3
 
         for concept in concepts:
-            prompt = f"""
-Store this concept using membrain_add.
+            # 🔥 update learning
+            update_score(user_id, concept)
 
-ONLY call tool.
+            # 🔥 DIRECT TOOL CALL (NO LLM CONFUSION)
+            tool_call = {
+                "function": {
+                    "name": "membrain_add",
+                    "arguments": json.dumps({
+                        "content": concept,
+                        "user_id": user_id
+                    })
+                }
+            }
 
-Content:
-{concept}
-"""
-            result = run_agent(prompt)
+            result = execute_tool(tool_call)
             results.append(result)
 
         all_concepts.extend(concepts)
