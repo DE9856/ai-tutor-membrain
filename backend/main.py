@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from models import NoteInput, SearchInput
 from agent import run_agent
+from tool_executor import get_graph, get_recommendations
 
 app = FastAPI()
 
@@ -36,8 +37,24 @@ Content:
 @app.post("/search")
 def search(data: SearchInput):
     prompt = f"""
-    Search for relevant concepts related to:
+    You MUST call the tool 'membrain_search'.
+
+    DO NOT explain anything.
+    ONLY call the tool.
+
+    Query:
     {data.query}
     """
 
     return run_agent(prompt)
+
+
+@app.get("/graph")
+def graph():
+    return get_graph()
+
+@app.get("/recommendations")
+def recommendations():
+    return get_recommendations()
+
+
