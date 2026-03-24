@@ -1,15 +1,13 @@
 from fastapi import FastAPI
-from models import NoteInput
+from models import NoteInput, SearchInput
+from agent import run_agent
 
 app = FastAPI()
-
-# Temporary storage (we’ll replace with Membrain later)
-notes = []
 
 
 @app.get("/")
 def home():
-    return {"message": "Backend is working 🚀"}
+    return {"message": "AI Tutor Backend Running 🚀"}
 
 
 # -------------------------
@@ -17,8 +15,29 @@ def home():
 # -------------------------
 @app.post("/add_note")
 def add_note(data: NoteInput):
-    notes.append(data.text)
-    return {
-        "status": "stored",
-        "note": data.text
-    }
+    prompt = f"""
+You MUST store the following concept using the tool 'membrain_add'.
+
+DO NOT explain anything.
+DO NOT respond in text.
+
+ONLY call the tool.
+
+Content:
+{data.text}
+"""
+
+    return run_agent(prompt)
+
+
+# -------------------------
+# SEARCH
+# -------------------------
+@app.post("/search")
+def search(data: SearchInput):
+    prompt = f"""
+    Search for relevant concepts related to:
+    {data.query}
+    """
+
+    return run_agent(prompt)
