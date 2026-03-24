@@ -1,21 +1,53 @@
 import json
+from mcp_bridge import call_membrain
+
 
 def execute_tool(tool_call):
-    name = tool_call["function"]["name"]
-    args = json.loads(tool_call["function"]["arguments"])
+    try:
+        name = tool_call["function"]["name"]
 
-    if name == "membrain_add":
+        # -------------------------
+        # SAFE ARG PARSING
+        # -------------------------
+        raw_args = tool_call["function"].get("arguments", {})
+
+        if isinstance(raw_args, str):
+            try:
+                args = json.loads(raw_args)
+            except json.JSONDecodeError:
+                return {
+                    "error": "Invalid JSON arguments",
+                    "raw": raw_args
+                }
+
+        elif isinstance(raw_args, dict):
+            args = raw_args
+
+        else:
+            return {
+                "error": "Unsupported argument format",
+                "raw": str(raw_args)
+            }
+
+        # -------------------------
+        # TOOL HANDLING
+        # -------------------------
+        if name == "membrain_add":
+            content = args.get("content")
+            if not content:
+                return {"error": "Missing 'content'"}
+            return call_membrain("add", content)
+
+        if name == "membrain_search":
+            query = args.get("query")
+            if not query:
+                return {"error": "Missing 'query'"}
+            return call_membrain("search", query)
+
+        return {"error": f"Unknown tool: {name}"}
+
+    except Exception as e:
         return {
-            "action": "store",
-            "content": args["content"],
-            "note": "Handled by Membrain MCP"
+            "error": "Tool execution failed",
+            "details": str(e)
         }
-
-    if name == "membrain_search":
-        return {
-            "action": "search",
-            "query": args["query"],
-            "note": "Handled by Membrain MCP"
-        }
-
-    return {"error": "Unknown tool"}

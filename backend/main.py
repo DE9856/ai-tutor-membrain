@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from models import NoteInput, SearchInput
 from agent import run_agent
+from logic import update_score, get_graph_data, get_recommendations
+from note_processor import store_note_in_membrain
 
 app = FastAPI()
 
@@ -15,20 +17,13 @@ def home():
 # -------------------------
 @app.post("/add_note")
 def add_note(data: NoteInput):
-    prompt = f"""
-You MUST store the following concept using the tool 'membrain_add'.
+    result = store_note_in_membrain(data.text)
 
-DO NOT explain anything.
-DO NOT respond in text.
+    # update scores per concept
+    for concept in result["concepts"]:
+        update_score(concept, 0.3)
 
-ONLY call the tool.
-
-Content:
-{data.text}
-"""
-    return run_agent(prompt)
-
-
+    return result
 # -------------------------
 # SEARCH
 # -------------------------
@@ -51,20 +46,11 @@ Query:
 # -------------------------
 @app.get("/graph")
 def graph():
-    # simple placeholder (since real graph not exposed via API)
-    return {
-        "message": "Graph will be derived from Membrain in frontend",
-        "status": "using Membrain backend"
-    }
-
+    return get_graph_data()
 
 # -------------------------
 # RECOMMENDATIONS (TEMP)
 # -------------------------
-@app.get("/recommendations")
-def recommendations():
-    return {
-        "weak_concepts": [],
-        "next_to_learn": ["Try searching your stored concepts"],
-        "revise": []
-    }
+@app.get("/recommend")
+def recommend():
+    return get_recommendations()

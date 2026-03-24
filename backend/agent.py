@@ -49,34 +49,54 @@ tools = [
 # -------------------------
 # AGENT FUNCTION
 # -------------------------
-def run_agent(prompt: str):
+def run_agent(prompt: str, use_tools: bool = True):
+    # -------------------------
+    # API CALL
+    # -------------------------
     response = client.chat.completions.create(
         model="meta-llama/llama-3-8b-instruct",
         messages=[
-            {"role": "system", "content": "You MUST use tools."},
+            {
+                "role": "system",
+                "content": (
+                    "You are an AI learning assistant.\n"
+                    "Be precise and structured."
+                )
+            },
             {"role": "user", "content": prompt}
         ],
-        tools=tools,
-        tool_choice="auto"
+        tools=tools if use_tools else None,
+        tool_choice="auto" if use_tools else None
     )
 
+    # -------------------------
+    # EXTRACT RESPONSE
+    # -------------------------
     data = response.model_dump()
+    message = data["choices"][0]["message"]
 
     # -------------------------
-    # CHECK FOR TOOL CALLS
+    # TOOL MODE
     # -------------------------
-    tool_calls = data["choices"][0]["message"].get("tool_calls")
+    if use_tools:
+        tool_calls = message.get("tool_calls")
 
-    if tool_calls:
-        results = []
+        if tool_calls:
+            results = []
 
-        for call in tool_calls:
-            result = execute_tool(call)
-            results.append(result)
+            for call in tool_calls:
+                result = execute_tool(call)
+                results.append(result)
 
-        return {
-            "tool_executed": True,
-            "results": results
-        }
+            return {
+                "tool_executed": True,
+                "results": results
+            }
 
-    return data
+    # -------------------------
+    # TEXT MODE (NO TOOLS)
+    # -------------------------
+    return {
+        "tool_executed": False,
+        "response": message.get("content")
+    }

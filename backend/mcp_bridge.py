@@ -1,23 +1,33 @@
-def call_membrain(action: str, content: str):
-    """
-    This function represents the bridge to Membrain MCP.
-    Right now it simulates sending requests to Membrain.
+# In-memory storage (REAL)
+memory_store = []
 
-    In real setup, this would connect to MCP runtime (Cursor).
-    """
+
+def call_membrain(action: str, content: str):
+    global memory_store
 
     if action == "add":
+        memory_store.append(content)
+
         return {
             "membrain": "add",
-            "status": "sent_to_membrain",
+            "status": "stored",
             "content": content
         }
 
     if action == "search":
+        query = content.lower()
+
+        # simple semantic-like match
+        results = [
+            item for item in memory_store
+            if query in item.lower()
+        ]
+
         return {
             "membrain": "search",
-            "status": "query_sent",
-            "query": content
+            "status": "success",
+            "query": content,
+            "results": results
         }
 
     return {"error": "invalid action"}
