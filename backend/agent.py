@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
+from tool_executor import execute_tool
 
 # Load env
 load_dotenv()
@@ -52,11 +53,30 @@ def run_agent(prompt: str):
     response = client.chat.completions.create(
         model="meta-llama/llama-3-8b-instruct",
         messages=[
-            {"role": "system", "content": "You are an AI tutor that MUST use tools."},
+            {"role": "system", "content": "You MUST use tools."},
             {"role": "user", "content": prompt}
         ],
         tools=tools,
-        tool_choice="auto"  # try "required" if supported
+        tool_choice="auto"
     )
 
-    return response.model_dump()
+    data = response.model_dump()
+
+    # -------------------------
+    # CHECK FOR TOOL CALLS
+    # -------------------------
+    tool_calls = data["choices"][0]["message"].get("tool_calls")
+
+    if tool_calls:
+        results = []
+
+        for call in tool_calls:
+            result = execute_tool(call)
+            results.append(result)
+
+        return {
+            "tool_executed": True,
+            "results": results
+        }
+
+    return data
