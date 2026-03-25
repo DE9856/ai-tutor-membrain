@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "frontend/app.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "installCommand": "pip install -r frontend/requirements.txt"
+      }
     }
   ],
   "routes": [
@@ -13,8 +16,7 @@
     }
   ],
   "env": {
-    "BACKEND_API_URL": "https://ai-tutor-backend.onrender.com",
-    "OPENROUTER_API_KEY": "{os.getenv('OPENAI_API_KEY')}",  
+    "BACKEND_API_URL": "https://ai-tutor-backend-mir3.onrender.com",
     "USE_MOCK_MODE": "false"
   }
 }

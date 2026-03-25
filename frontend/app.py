@@ -10,6 +10,8 @@ import networkx as nx
 from pyvis.network import Network
 import pandas as pd
 import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import json
 import time
 import re
@@ -38,7 +40,7 @@ except ImportError:
 # CONFIGURATION
 # ============================================
 
-BACKEND_API_URL = os.getenv("BACKEND_API_URL", "http://localhost:8000")
+BACKEND_API_URL = os.getenv("BACKEND_API_URL", "https://ai-tutor-backend-mir3.onrender.com")
 USE_MOCK_MODE = os.getenv("USE_MOCK_MODE", "false").strip().lower() == "true"
 
 # OpenRouter API for AI notes (optional)
