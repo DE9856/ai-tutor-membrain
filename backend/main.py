@@ -20,10 +20,22 @@ from logic import (
 from mcp_bridge import membrain_client
 from auth import signup_user, login_user
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
+# Add CORS middleware
+
 app = FastAPI(
     title="AI Tutor with Membrain",
     description="Fully dynamic learning assistant with semantic memory",
     version="2.0.0"
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Will update with Vercel URL later
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

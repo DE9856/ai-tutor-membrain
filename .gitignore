@@ -5,3 +5,20 @@ __pycache__/
 
 venv/
 .venv/
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+venv/
+env/
+.venv/
+.DS_Store
+*.log
+membrain_graph.html

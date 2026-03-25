@@ -8,7 +8,7 @@ load_dotenv()
 # OpenRouter client (OpenAI-compatible)
 client = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY"),
-    base_url=os.getenv("OPENAI_BASE_URL")
+    base_url=os.getenv("OPENAI_BASE_URL","https://openrouter.ai/api/v1")
 )
 
 # -------------------------

@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/app.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "frontend/app.py"
+    }
+  ],
+  "env": {
+    "BACKEND_API_URL": "https://ai-tutor-backend.onrender.com",
+    "OPENROUTER_API_KEY": "{os.getenv('OPENAI_API_KEY')}",  
+    "USE_MOCK_MODE": "false"
+  }
+}
