@@ -5,7 +5,8 @@
       "src": "frontend/app.py",
       "use": "@vercel/python",
       "config": {
-        "installCommand": "pip install -r frontend/requirements.txt"
+        "installCommand": "pip install -r frontend/requirements.txt",
+        "pythonVersion": "3.11"
       }
     }
   ],
