@@ -2,7 +2,7 @@ services:
   - type: web
     name: ai-tutor-backend
     runtime: python
-    repo: https://github.com/YOUR_USERNAME/ai_tutor_membrain
+    repo: https://github.com/DE9856/ai_tutor_membrain
     plan: free
     region: oregon
     rootDir: backend
