@@ -32,12 +32,16 @@ app = FastAPI(
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Will update with Vercel URL later
+    allow_origins=[
+        "https://ai-tutor-backend-mir3.onrender.com",
+        "https://ai-tutor-membrain.streamlit.app",  # Your Streamlit Cloud URL
+        "http://localhost:8501",
+        "https://*.streamlit.app"  # Allow all Streamlit apps
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.get("/")
 def home():
